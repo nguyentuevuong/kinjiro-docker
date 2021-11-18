@@ -1,0 +1,29 @@
+version: '3.1'
+
+services:
+  db:
+    image: nts/db
+    container_name: kinjirou-adb
+    ports:
+      - 1433:1433
+    environment:
+      SA_PASSWORD: "Kinjirou@#123"
+      ACCEPT_EULA: "Y"
+    networks:
+      - nts
+  app:
+    image: nts/uk
+    container_name: kinjirou-app
+    depends_on: 
+      - db
+    ports:
+      # 8080 where application is deployed, 9990 for admin console
+      - 8080:8080
+      - 9990:9990
+    command: /opt/jboss/wildfly/bin/standalone.sh -b 0.0.0.0 -bmanagement 0.0.0.0
+    networks:
+      - nts
+networks:
+  nts:
+    # Use a custom driver
+    driver: bridge
